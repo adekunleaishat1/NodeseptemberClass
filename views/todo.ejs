@@ -14,11 +14,18 @@
         <button class="btn btn-dark mt-3" type="submit">Addtodo</button>
     </form>
      
-    <% todoarray.forEach(element => { %>
+    <% todoarray.forEach((element, index) => { %>
        <p><%= element.title %></p>
        <p><%= element.content %></p>
-       <button>edit</button>
-       <button>delete</button>
+
+       <form action="/deletetodo" method="post">
+        <input name="index" value="<%= index %>" type="text" hidden>
+        <button>delete</button>
+       </form>
+
+       <form action="/edit/<%= index %>" method="get">
+         <button>edit</button>
+       </form>
     <% }) %>
     
  

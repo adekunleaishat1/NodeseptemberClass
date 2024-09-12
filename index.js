@@ -66,7 +66,28 @@ app.post("/addtodo",(req, res)=>{
   res.redirect('/todo')
 })
 
+app.post("/deletetodo",(req, res)=>{
+  console.log(req.body);
+  const {index} = req.body
+  // let index = req.body.index
+  todoarray.splice(index, 1)
+  res.redirect("/todo")
+})
 
+app.get("/edit/:index",(req, res)=>{
+  console.log(req.params.index);
+  const {index} = req.params
+  let onetodo = todoarray[index]
+  res.render("edit", {onetodo, index})
+})
+
+app.post("/edittodo/:index",(req, res)=>{
+  console.log(req.body);
+  const {index} = req.params
+  console.log(todoarray[index]);
+  todoarray[index] = req.body
+  res.redirect("/todo")
+})
 
 const port = 8003
 
