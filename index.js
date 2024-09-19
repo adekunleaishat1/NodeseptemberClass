@@ -1,10 +1,30 @@
 const express = require('express')
 const app = express()
 const ejs = require('ejs')
+const mongoose = require("mongoose")
 
 ///middle ware
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended:true}))
+
+// CRUD CREATE READ UPDATE AND DELETE
+
+const userschma = mongoose.Schema({
+  firstname:{type:String,trim:true,required:true },
+  lastname:{type:String,trim:true,required:true},
+  email:{type:String, unique:true, trim:true,required:true},
+  password:{type:String, trim:true, required:true}
+})
+
+const usermodel = mongoose.model("user_collection", userschma)
+
+ const todoschema = mongoose.Schema({
+   title:{type:String, trim:true, required:true},
+   content:{type:String, trim:true, required:true}
+  
+ },{timestamps:true})
+
+ const todomodel = mongoose.model("todo_collection", todoschema)
 
 let userarray = []
 let todoarray = []
@@ -19,51 +39,69 @@ app.get('/login',(req, res)=>{
     res.render("login")
 })
 
-app.get("/todo",(req, res)=>{
-   res.render("todo",{todoarray})
+app.get("/todo", async(req, res)=>{
+  const alltodo = await todomodel.find()
+  console.log(alltodo);
+   res.render("todo",{alltodo})
 })
 
-app.post("/register",(req, res)=>{
+app.post("/register", async(req, res)=>{
   console.log(req.body);
-  let body = req.body
-  let existuser =  userarray.find((user)=> user.email === req.body.email)
-  if (existuser) {
-     errormessage = "user already exist"
-     res.redirect("/")
-  }else{
-     errormessage = ""
-    userarray.push(body)
-    console.log(userarray);
-    res.redirect("/login")
+  try {
+   const createuser = await usermodel.create(req.body)
+   if (createuser) {
+      console.log("signup successful");
+      res.redirect("/login")
+      
+   }else{
+    console.log("error occured");
+    res.redirect("/")
+   }
+  } catch (error) {
+    console.log(error);
+    res.redirect("/")
   }
   
 })
 
-app.post("/signin",(req, res)=>{
+app.post("/signin", async(req, res)=>{
   console.log(req.body);
- const existuser = userarray.find((user)=>user.email == req.body.email)
- console.log(existuser);
-   if (!existuser) {
-    console.log("you are not a registered user ; please sign up");
+  const {email , password} = req.body
+  try {
+   const existuser = await usermodel.findOne({email:email})
+   console.log(existuser);
+   if (existuser && existuser.password == password) {
+    console.log("login successful");
+    res.redirect("/todo")
    }else{
-    if (existuser.password == req.body.password) {
-      console.log("login successful");
-
-      
-    }else{
-      console.log("invalid password");
-      
-    }
+    console.log("invalid user");
+    res.redirect("/login")
    }
-  
-
+    
+  } catch (error) {
+    console.log(error);
+    res.redirect("/login")
+    
+  }
 })
 
-app.post("/addtodo",(req, res)=>{
+app.post("/addtodo", async(req, res)=>{
   console.log(req.body);
-  todoarray.push(req.body)
-  console.log(todoarray);
-  res.redirect('/todo')
+  try {
+    const todo =  await todomodel.create(req.body)
+ if (todo) {
+  console.log("todo created successfully");
+    res.redirect('/todo')
+ }else{
+  console.log("error occured");
+  
+ }
+  } catch (error) {
+    console.log(error);
+    
+  }
+ 
+
 })
 
 app.post("/deletetodo",(req, res)=>{
@@ -89,6 +127,23 @@ app.post("/edittodo/:index",(req, res)=>{
   res.redirect("/todo")
 })
 
+
+const uri = "mongodb+srv://aishatadekunle877:aishat@cluster0.t92x8pf.mongodb.net/septembercohort?retryWrites=true&w=majority&appName=Cluster0"
+
+const db_connect = async() =>{
+  try {
+    const connection = await mongoose.connect(uri)
+    if (connection) {
+      console.log("connected to database");
+      
+    }
+    
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+db_connect()
 const port = 8003
 
 app.listen(port,()=>{
