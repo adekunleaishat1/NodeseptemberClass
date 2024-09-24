@@ -104,27 +104,60 @@ app.post("/addtodo", async(req, res)=>{
 
 })
 
-app.post("/deletetodo",(req, res)=>{
+app.post("/deletetodo", async(req, res)=>{
   console.log(req.body);
-  const {index} = req.body
-  // let index = req.body.index
-  todoarray.splice(index, 1)
+try {
+  const {id} = req.body
+ const deleted =  await todomodel.findByIdAndDelete({_id:id})
+ console.log(deleted);
+res.redirect("/todo")
+
+  
+} catch (error) {
+  console.log(error);
   res.redirect("/todo")
+}
+  
 })
 
-app.get("/edit/:index",(req, res)=>{
-  console.log(req.params.index);
-  const {index} = req.params
-  let onetodo = todoarray[index]
-  res.render("edit", {onetodo, index})
+app.get("/edit/:id",async(req, res)=>{
+  console.log(req.params.id);
+  const {id} = req.params
+  try {
+   const getedit = await todomodel.findOne({_id:id})
+   console.log(getedit);
+   res.render("edit", {getedit})
+  } catch (error) {
+    console.log(error);
+    res.redirect("/todo")
+  }
+  // const {index} = req.params
+  // let onetodo = todoarray[index]
+  // res.render("edit", {onetodo, index})
 })
 
-app.post("/edittodo/:index",(req, res)=>{
+app.post("/edittodo/:id",async(req, res)=>{
   console.log(req.body);
-  const {index} = req.params
-  console.log(todoarray[index]);
-  todoarray[index] = req.body
-  res.redirect("/todo")
+  const {id} = req.params;
+  const {title , content} = req.body
+  try {
+    const postedit = await todomodel.findOneAndUpdate(
+      {_id:id},
+      {title:title, content:content},
+      {new:true}
+    )
+    console.log(postedit);
+    res.redirect("/todo")
+    
+  } catch (error) {
+    console.log(error);
+    res.redirect("/edit/:id")
+    
+  }
+  // const {index} = req.params
+  // console.log(todoarray[index]);
+  // todoarray[index] = req.body
+  // res.redirect("/todo")
 })
 
 

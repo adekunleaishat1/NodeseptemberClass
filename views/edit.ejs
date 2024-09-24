@@ -8,10 +8,10 @@
     <title>Document</title>
 </head>
 <body>
-    <form class="w-50 mx-auto px-3 py-3 shadow" action="/edittodo/<%= index %>" method="post">
+    <form class="w-50 mx-auto px-3 py-3 shadow" action="/edittodo/<%= getedit._id %>" method="post">
          <h1>Edit</h1>
-        <input value="<%= onetodo.title %>"  class="form-control mt-3" name="title" type="text" placeholder="Title">
-        <input value="<%= onetodo.content %>"  class="form-control mt-3" name="content" type="text" placeholder="content">
+        <input value="<%= getedit.title %>"  class="form-control mt-3" name="title" type="text" placeholder="Title">
+        <input value="<%= getedit.content %>"  class="form-control mt-3" name="content" type="text" placeholder="content">
         <button class="btn btn-dark mt-3" type="submit">Edittodo</button>
     </form>
     

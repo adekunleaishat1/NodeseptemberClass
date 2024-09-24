@@ -19,11 +19,11 @@
        <p><%= element.content %></p>
 
        <form action="/deletetodo" method="post">
-        <input name="index" value="<%= index %>" type="text" hidden>
+        <input name="id" value="<%= element._id %>" type="text" hidden>
         <button>delete</button>
        </form>
 
-       <form action="/edit/<%= index %>" method="get">
+       <form action="/edit/<%= element._id %>" method="get">
          <button>edit</button>
        </form>
     <% }) %>
