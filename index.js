@@ -26,6 +26,15 @@ const usermodel = mongoose.model("user_collection", userschma)
 
  const todomodel = mongoose.model("todo_collection", todoschema)
 
+ const shopschema = mongoose.Schema({
+  item:{type:String, trim:true,required:true},
+  price:{type:Number, trim:true, required:true},
+  quantity:{type:Number, trim:true, required:true},
+  amount:{type:Number, trim:true, required:true},
+  completed:{type:Boolean, default:false}
+ },{timestamps:true})
+ const shopmodel = mongoose.model("shopping_collection", shopschema)
+
 let userarray = []
 let todoarray = []
 let errormessage  = ""
@@ -43,6 +52,13 @@ app.get("/todo", async(req, res)=>{
   const alltodo = await todomodel.find()
   console.log(alltodo);
    res.render("todo",{alltodo})
+})
+
+app.get('/shop', async(req, res)=>{
+   const shoplist = await shopmodel.find()
+   console.log(shoplist);
+   
+  res.render("shop",{shoplist})
 })
 
 app.post("/register", async(req, res)=>{
@@ -160,6 +176,39 @@ app.post("/edittodo/:id",async(req, res)=>{
   // res.redirect("/todo")
 })
 
+app.post("/addlist", async(req, res)=>{
+try {
+  console.log(req.body);
+ const add =  await shopmodel.create(req.body)
+  if (add) {
+    console.log("list added");
+    res.redirect("/shop")
+  }else{
+    console.log("an error occured");
+    res.redirect("/shop")
+  }
+} catch (error) {
+  console.log(error);
+  res.redirect("/shop")
+  
+}
+})
+
+app.post('/update/:id', async(req, res)=>{
+  try {
+    console.log(req.body);
+    const {id} = req.params
+    const {completed} = req.body
+    await shopmodel.findByIdAndUpdate(
+      {_id:id},
+      {completed:completed},
+      {new:true}
+    )    
+  } catch (error) {
+    console.log(error);
+    
+  }
+})
 
 const uri = "mongodb+srv://aishatadekunle877:aishat@cluster0.t92x8pf.mongodb.net/septembercohort?retryWrites=true&w=majority&appName=Cluster0"
 
