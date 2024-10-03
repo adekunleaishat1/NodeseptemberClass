@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form class="w-50 mx-auto px-3 py-3 shadow" action="/addtodo" method="post">
+    <form class="w-50 mx-auto px-3 py-3 shadow" action="/todo/addtodo" method="post">
         <input  class="form-control mt-3" name="title" type="text" placeholder="Title">
         <input  class="form-control mt-3" name="content" type="text" placeholder="content">
         <button class="btn btn-dark mt-3" type="submit">Addtodo</button>
@@ -18,12 +18,12 @@
        <p><%= element.title %></p>
        <p><%= element.content %></p>
 
-       <form action="/deletetodo" method="post">
+       <form action="/todo/deletetodo" method="post">
         <input name="id" value="<%= element._id %>" type="text" hidden>
         <button>delete</button>
        </form>
 
-       <form action="/edit/<%= element._id %>" method="get">
+       <form action="/todo/edit/<%= element._id %>" method="get">
          <button>edit</button>
        </form>
     <% }) %>

@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form class="w-50 mx-auto px-3 py-3 shadow" action="/edittodo/<%= getedit._id %>" method="post">
+    <form class="w-50 mx-auto px-3 py-3 shadow" action="/todo/edittodo/<%= getedit._id %>" method="post">
          <h1>Edit</h1>
         <input value="<%= getedit.title %>"  class="form-control mt-3" name="title" type="text" placeholder="Title">
         <input value="<%= getedit.content %>"  class="form-control mt-3" name="content" type="text" placeholder="content">

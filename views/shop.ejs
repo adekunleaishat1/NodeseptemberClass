@@ -38,7 +38,7 @@
                 <td>
                     <form action="/update/<%= element._id %>" method="post">
                         
-                        <button class="border-none" id="but" type="submit">
+                        <button class="border border-0 bg-white" id="but" type="submit">
                             <% if (element.completed == true) { %> 
                                 <input checked  value="true" id="completed" type="checkbox" name="completed" >
                             <% }else{ %>
@@ -73,7 +73,7 @@
      let subtotal = parseInt(price.value * quantity.value)
      amount.value = subtotal
    })
-   completed.addEventListener("input",()=>{
+   document.getElementById("completed").addEventListener("input",()=>{
       document.getElementById("but").click()
    })
   

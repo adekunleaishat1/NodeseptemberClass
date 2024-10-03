@@ -2,57 +2,29 @@ const express = require('express')
 const app = express()
 const ejs = require('ejs')
 const mongoose = require("mongoose")
+const usermodel = require("./model/Usermodel")
+
+const shopmodel = require("./model/Shopmodel")
+const userrouter = require("./Route/Userroute")
+const todorouter = require("./Route/Todoroute")
 
 ///middle ware
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended:true}))
+app.use("/user",userrouter)
+app.use("/todo",todorouter)
 
 // CRUD CREATE READ UPDATE AND DELETE
 
-const userschma = mongoose.Schema({
-  firstname:{type:String,trim:true,required:true },
-  lastname:{type:String,trim:true,required:true},
-  email:{type:String, unique:true, trim:true,required:true},
-  password:{type:String, trim:true, required:true}
-})
 
-const usermodel = mongoose.model("user_collection", userschma)
 
- const todoschema = mongoose.Schema({
-   title:{type:String, trim:true, required:true},
-   content:{type:String, trim:true, required:true}
-  
- },{timestamps:true})
-
- const todomodel = mongoose.model("todo_collection", todoschema)
-
- const shopschema = mongoose.Schema({
-  item:{type:String, trim:true,required:true},
-  price:{type:Number, trim:true, required:true},
-  quantity:{type:Number, trim:true, required:true},
-  amount:{type:Number, trim:true, required:true},
-  completed:{type:Boolean, default:false}
- },{timestamps:true})
- const shopmodel = mongoose.model("shopping_collection", shopschema)
-
-let userarray = []
-let todoarray = []
 let errormessage  = ""
 
-app.get("/", (req, res)=>{
 
-  res.render("signup",{errormessage})
-})
 
-app.get('/login',(req, res)=>{
-    res.render("login")
-})
 
-app.get("/todo", async(req, res)=>{
-  const alltodo = await todomodel.find()
-  console.log(alltodo);
-   res.render("todo",{alltodo})
-})
+
+
 
 app.get('/shop', async(req, res)=>{
    const shoplist = await shopmodel.find()
@@ -101,80 +73,13 @@ app.post("/signin", async(req, res)=>{
   }
 })
 
-app.post("/addtodo", async(req, res)=>{
-  console.log(req.body);
-  try {
-    const todo =  await todomodel.create(req.body)
- if (todo) {
-  console.log("todo created successfully");
-    res.redirect('/todo')
- }else{
-  console.log("error occured");
-  
- }
-  } catch (error) {
-    console.log(error);
-    
-  }
- 
 
-})
 
-app.post("/deletetodo", async(req, res)=>{
-  console.log(req.body);
-try {
-  const {id} = req.body
- const deleted =  await todomodel.findByIdAndDelete({_id:id})
- console.log(deleted);
-res.redirect("/todo")
 
-  
-} catch (error) {
-  console.log(error);
-  res.redirect("/todo")
-}
-  
-})
 
-app.get("/edit/:id",async(req, res)=>{
-  console.log(req.params.id);
-  const {id} = req.params
-  try {
-   const getedit = await todomodel.findOne({_id:id})
-   console.log(getedit);
-   res.render("edit", {getedit})
-  } catch (error) {
-    console.log(error);
-    res.redirect("/todo")
-  }
-  // const {index} = req.params
-  // let onetodo = todoarray[index]
-  // res.render("edit", {onetodo, index})
-})
 
-app.post("/edittodo/:id",async(req, res)=>{
-  console.log(req.body);
-  const {id} = req.params;
-  const {title , content} = req.body
-  try {
-    const postedit = await todomodel.findOneAndUpdate(
-      {_id:id},
-      {title:title, content:content},
-      {new:true}
-    )
-    console.log(postedit);
-    res.redirect("/todo")
-    
-  } catch (error) {
-    console.log(error);
-    res.redirect("/edit/:id")
-    
-  }
-  // const {index} = req.params
-  // console.log(todoarray[index]);
-  // todoarray[index] = req.body
-  // res.redirect("/todo")
-})
+
+
 
 app.post("/addlist", async(req, res)=>{
 try {
@@ -199,11 +104,24 @@ app.post('/update/:id', async(req, res)=>{
     console.log(req.body);
     const {id} = req.params
     const {completed} = req.body
+   const shop =  await shopmodel.findOne({_id: id })
+   console.log(shop, "shop completed");
+   
+   if (shop.completed == true) {
+    await shopmodel.findByIdAndUpdate(
+      {_id:id},
+      {completed:false},
+      {new:true}
+    )   
+    res.redirect('/shop') 
+   }else{
     await shopmodel.findByIdAndUpdate(
       {_id:id},
       {completed:completed},
       {new:true}
     )    
+    res.redirect('/shop') 
+   }
   } catch (error) {
     console.log(error);
     
